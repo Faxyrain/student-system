@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>与学生聊天</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-2">
+            <ul class="flex space-x-4">
+                <li><a href="#" onclick="showSection('timetable')" class="text-blue-500 hover:text-blue-600">课表</a></li>
+                <li><a href="#" onclick="showSection('grades')" class="text-blue-500 hover:text-blue-600">成绩</a></li>
+                <li><a href="#" onclick="showSection('messages')" class="text-blue-500 hover:text-blue-600">消息</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">与学生 <span th:text="${otherUser.username}"></span> 聊天</h1>
+        <div class="border border-gray-300 rounded-lg overflow-hidden h-[600px] flex flex-col">
+            <div class="flex-1 overflow-y-auto p-4" id="messageContainer">
+                <div th:each="message : ${messages}" 
+                     th:class="${message.sender.id == currentUser.id} ? 'flex justify-end mb-2' : 'flex justify-start mb-2'">
+                    <div th:class="${message.sender.id == currentUser.id} ? 'bg-blue-500 text-white p-2 rounded-lg max-w-[70%]' : 'bg-gray-200 p-2 rounded-lg max-w-[70%]'">
+                        <p th:text="${message.content}"></p>
+                        <p class="text-xs text-gray-600 mt-1" th:text="${#dates.format(message.sendTime, 'HH:mm:ss')}"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-300">
+                <form action="#" th:action="@{/messages/send}" method="post">
+                    <input type="hidden" th:name="senderId" th:value="${currentUser.id}">
+                    <input type="hidden" th:name="receiverId" th:value="${otherUser.id}">
+                    <div class="flex">
+                        <input type="text" name="content" placeholder="输入消息..." class="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none">
+                        <button type="submit" class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600">发送</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 滚动到底部
+        window.onload = function() {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        };
+    </script>
+</body>
+</html>
